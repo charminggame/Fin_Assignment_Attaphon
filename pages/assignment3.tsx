@@ -1,5 +1,4 @@
 import { GetServerSideProps } from "next";
-import Link from 'next/link'
 
 interface IndexPageProps {
   data_1: {
@@ -24,15 +23,11 @@ export default function IndexPage({ data_1, data_2 }: IndexPageProps) {
   }
   return (
     <>
-        <h1>Assignment1</h1>
+        <h1>Assignment3</h1>
         <h4>FTX BTC Price: {data_1.result.price} USDT</h4>
         <h4>Binance BTC Price: {data_2.price} USDT</h4>
         <h4>Diff: {totalPrice}, ({Diff}%)</h4>
 
-        <Link href="/assignment2">
-          <a>assignment2</a>
-        </Link>
-        
     </>
   );
 }
@@ -43,6 +38,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const data_1 = await res_1.json();
   const res_2 = await fetch('https://api1.binance.com/api/v3/avgPrice?symbol=BTCUSDT');
   const data_2 = await res_2.json();
+  const res = await fetch('https://api1.binance.com/api/v3/depth?symbol=BTCUSDT');
+  const data = await res.json();
   console.log(data_1, data_2);
   return {
     props: {
