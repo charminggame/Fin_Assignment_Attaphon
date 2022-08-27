@@ -30,8 +30,11 @@ export default function IndexPage() {
 
   return (
     <div>
-      <h1>Assignment1-2</h1>
-
+      <h1>Assignment2</h1>
+      <Link href="/">
+        <a>assignment1</a>
+      </Link>
+      <br></br>
       <Link href="/assignment3">
           <a>assignment3</a>
       </Link>

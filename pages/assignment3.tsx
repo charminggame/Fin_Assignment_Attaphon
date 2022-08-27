@@ -1,50 +1,59 @@
-import { GetServerSideProps } from "next";
+import axios from "axios";
+import Link from "next/link";
 
-interface IndexPageProps {
-  data_1: {
-    success: boolean;
-    result: any;
-  };
-  data_2: {
-    mins: number;
-    price: number;
-  };
-}
 
-export default function IndexPage({ data_1, data_2 }: IndexPageProps) {
-  let totalPrice = 0;
-  let Diff = 0;  
-  if(data_1.result.price < data_2.price){
-    totalPrice = data_2.price - data_1.result.price;
-    Diff = totalPrice / data_2.price;
-  }else{
-    totalPrice = data_1.result.price - data_2.price;
-    Diff = totalPrice / data_2.price;
+
+  const url = "https://api1.binance.com/api/v3/depth?symbol=BTCUSDT";
+  axios.get(url).then((response) => {
+    const result = response.data;
+    console.log(result);
+    function calculateOutputAmount() {
+      let token: number = 0;
+      let usdtAmount: number = 290000;
+      let inputValue = usdtAmount;
+      let totalBTC;
+      result.asks.map((array: number[]) => {
+        const price: number = ++array[0];
+        const volume: number = ++array[1];
+        const calInput = inputValue / (price * volume);
+        if (inputValue > 0) {
+          if (calInput > volume) {
+            totalBTC = token + volume;
+          } else {
+            totalBTC = token + calInput;
+          }
+          inputValue = inputValue - price * (totalBTC - token);
+          token = totalBTC;
+        }
+      });
+      console.log("Input USDT: " + usdtAmount);
+      console.log("Output BTC: " + token);
+    }
+    calculateOutputAmount();
+  });
+  
+
+  function calculateOutputAmount() {
+    throw new Error("Function not implemented.");
   }
-  return (
-    <>
-        <h1>Assignment3</h1>
-        <h4>FTX BTC Price: {data_1.result.price} USDT</h4>
-        <h4>Binance BTC Price: {data_2.price} USDT</h4>
-        <h4>Diff: {totalPrice}, ({Diff}%)</h4>
 
-    </>
+
+export default function IndexPage() {
+  return (
+    <div>
+      <h1>Assignment3</h1>
+
+
+      <Link href="/">
+        <a>assignment1</a>
+      </Link>
+      <br></br>
+      <Link href="/assignment2">
+        <a>assignment2</a>
+      </Link>
+
+
+    </div>
   );
 }
 
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  const res_1 = await fetch('https://ftx.com/api/markets/BTC/USDT');
-  const data_1 = await res_1.json();
-  const res_2 = await fetch('https://api1.binance.com/api/v3/avgPrice?symbol=BTCUSDT');
-  const data_2 = await res_2.json();
-  const res = await fetch('https://api1.binance.com/api/v3/depth?symbol=BTCUSDT');
-  const data = await res.json();
-  console.log(data_1, data_2);
-  return {
-    props: {
-      data_1,
-      data_2,
-    },
-  };
-};
